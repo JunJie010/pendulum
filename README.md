@@ -7,9 +7,14 @@
 
 ## 项目预览
 ![项目展示](制作过程/成品展示.jpg)
+[跳转项目演示视频](https://www.bilibili.com/video/BV1z5wtzeEoM/?vd_source=95764cfd8bb1371dc92f356cd7f2fb75)
+
+## 项目功能
 
 
-
+## 项目职责
+* 编写ESP8266**WIFI**模块代码
+* 
 
 
 
