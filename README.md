@@ -3,7 +3,7 @@
 >
 >原项目地址：[倒立摆](https://x509p6c8to.feishu.cn/docx/FeMndRrzRommxGxTkFscJ0zKnKh)
 >
->在此感谢原项目作者小智，阿奇的杰出工作
+>在此感谢原项目作者的杰出工作
 
 ## 项目预览
 ![项目展示](制作过程纪念/成品展示.jpg)
