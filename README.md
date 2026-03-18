@@ -78,7 +78,45 @@ TIM_InternalClockConfig(TIM2);                     //选择内部时钟为时基
 	
 	TIM_Cmd(TIM2,ENABLE);               //使能定时器
 ```
+***
 
+## 关于编码器驱动任务
+![电机电路图](制作过程/电机电路原理图.png)
+
+我们使用的是M3电机，其中E1B和E1A是编码器的两个引脚网络编号，对应接在了STM32的PA6和PA7两个引脚
+
+查看引脚功能复用表发现PA6和PA7分别对应TIM3的通道1和通道2
+```
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;                    
+	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;         //选择1时钟分频
+	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;     //选择向上计数模式
+	TIM_TimeBaseInitStructure.TIM_Period = 65536 - 1;		  //ARR
+	TIM_TimeBaseInitStructure.TIM_Prescaler = 1 - 1;		  //PSC
+	TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0;           //选择重复计数器值0，高级定时器才需要用这个
+	
+	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStructure);        //初始化时基单元
+```
+编码器读取函数定时获取编码器增量，即表示速度，而位置就是增量值的累加
+```
+int16_t Encoder_Get(void)
+{
+	int16_t Temp;
+	Temp = TIM_GetCounter(TIM3);
+	TIM_SetCounter(TIM3, 0);
+	return Temp;
+}
+if (TIM_GetITStatus(TIM1, TIM_IT_Update) == SET)           //定时中断标志位的判断
+	{
+		Count++;
+		if(Count>=40)            //定时器分频
+		{
+			Count=0;
+			Speed=Encoder_Get();         //获取横摆速度
+			location+=Encoder_Get();     //获取横摆位置
+		}
+	}
+```
+***
 
 
 
