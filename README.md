@@ -156,7 +156,7 @@ uint16_t AD_GetValue(void)                   //启动转换，调用结果
 
 ## 关于串级PID控制系统模块代码的编写
 项目设计的串级PID控制系统，外环位置环内环角度环
-![PID](制作过程/PID控制框图.jpg)
+![PID](制作过程/PID.jpg)
 
 ```
 void PID_Move(PID *p)          //定义PID启动代码
