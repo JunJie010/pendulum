@@ -42,6 +42,41 @@ System为核心层，放置USART/IIC/ADC/TIM等常用通信协议驱动
 
 User为用户层，编写主函数和PID控制系统
 ***
+## 关于电机驱动任务
+![电机电路图](制作过程/电机电路图.png)
+![TB6612电路](制作过程/TB6612电路.png)
+当前编码电机接的是M3接口，其中M1+和M1-就是直流电机接口的两个引脚，分别接在TB6612模块的A01和AO2，作为A路的输出
+
+A路的控制引脚是PWMA，AIN1和AIN2，其中，PWMA接的是A0引脚，只需要再A0输出PWM波形即可，查看引脚复用表得知A0复用了TIM2的通道1
+
+其中AIN1和AIN2接在了PB12和PB13，用GPIO控制电机的方向
+![稳压器电路图](制作过程/稳压器电路图.png)
+VM为电机驱动电源，经过电源或接线端子过一个开关到VIN，输入电压为5-12V用于驱动电机，而后VIN电源通过稳压模块，降到3.3V，用于给到后面所有的低压设备供电
+```
+TIM_InternalClockConfig(TIM2);                     //选择内部时钟为时基单元的时钟源
+	
+	TIM_TimeBaseInitTypeDef TIM_TimeBase_Structure;
+	TIM_TimeBase_Structure.TIM_ClockDivision=TIM_CKD_DIV1;         //选择1时钟分频
+	TIM_TimeBase_Structure.TIM_CounterMode=TIM_CounterMode_Up;      //选择向上计数模式
+	TIM_TimeBase_Structure.TIM_Period=100-1;                                //选择ARR自动重装器值100-1
+	TIM_TimeBase_Structure.TIM_Prescaler=36-1;                               //选择PSC预分频器值720-1
+	TIM_TimeBase_Structure.TIM_RepetitionCounter=0;                       //选择重复计数器值0，高级定时器才需要用这个
+	TIM_TimeBaseInit(TIM2,&TIM_TimeBase_Structure);           //初始化时基单元
+	
+	TIM_OCInitTypeDef TIM_OCInitStruct;
+	TIM_OCStructInit(&TIM_OCInitStruct);       //没有用完结构体成员，给结构体变量赋初值
+	TIM_OCInitStruct.TIM_OCMode=TIM_OCMode_PWM1;         //设置为PWM模式1
+	TIM_OCInitStruct.TIM_OCPolarity=TIM_OCPolarity_High;    //极性不翻转
+	TIM_OCInitStruct.TIM_OutputState=TIM_OutputState_Enable;    //输出状态使能
+	TIM_OCInitStruct.TIM_Pulse=0;                                //设置CCR寄存器值                       
+	                                       //带N的成员是高级定时器使用的，这里不需要          
+	TIM_OC1Init(TIM2,&TIM_OCInitStruct);                //初始化输出比较单元通道2        
+	                                                 //同一个定时器不同通道的频率一样，各自的占空比由各自的CCR决定，相位也是同步的
+	
+	TIM_Cmd(TIM2,ENABLE);               //使能定时器
+```
+
+
 
 
 
